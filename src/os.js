@@ -13,7 +13,13 @@ function lookOs(currentData) {
       osLog(JSON.stringify(os.EOL));
       break;
     case '--cpus':
-      osLog(os.cpus());
+      const st = os.cpus();
+      console.log('Count: ' + st.length);
+      os.cpus().forEach(item => {
+        console.log('model: ' + item.model);
+        console.log('speed: ' + item.speed * 0.001 + 'GHz')
+      });
+      // osLog();
       break;
     case '--homedir':
       osLog(os.homedir());
