@@ -87,19 +87,15 @@ const fileManager = async (name) => {
             const last = arrPath[arrPath.length - 1];
             let status;
             const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
-            console.log(arrSplit, arrPath)
             currentPath = arrSplit.filter((item, index) => index !== arrSplit.length - 1);
-            console.log(currentPath)
             const startName = arrSplit[arrSplit.length - 1];
             const searhArr = arrPath.slice(1, arrPath.length - 1);
             searhArr.unshift(startName)
             currentPath = path.join(...currentPath);
-            console.log(currentPath, searhArr)
             fsPromise.readdir(currentPath, 'utf-8').then((res) => {
               for (let i = searhArr.length; i >= 0; i--) {
                 // add emit
                 const searchName = searhArr.slice(0, i).join(' ');
-                console.log(searchName, startName, searhArr[0], 'x')
                 if (res.includes(searchName)) {
                   const oldName = searchName;
                   const currentName = searhArr.slice(i).join(' ') + ' ' + last;
@@ -108,7 +104,6 @@ const fileManager = async (name) => {
                       status = true;
                       console.log(greenColor, 'File renamed', whiteColor);
                       showPathDir(currentDir);
-                      console.log(oldName, currentName, currentPath)
                     }).catch((err) => {
                       console.log(err);
                       showPathDir(currentDir);
@@ -126,7 +121,6 @@ const fileManager = async (name) => {
             })
           } else if (arrPath.length === 2) {
             const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
-            console.log(arrSplit, arrPath, path.join(...arrSplit.slice(0, arrSplit.length - 1), arrPath[1]))
             fsPromise.rename(arrPath[0], path.join(...arrSplit.slice(0, arrSplit.length - 1), arrPath[1])).then(() => {
               // status = true;
               console.log(greenColor, 'File renamed', whiteColor);
@@ -141,19 +135,14 @@ const fileManager = async (name) => {
             const last = arrPath[arrPath.length - 1];
             let status;
             const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
-            console.log(arrSplit, arrPath)
             currentPath = arrSplit.filter((item, index) => index !== arrSplit.length - 1);
-            console.log(currentPath)
             const startName = arrSplit[arrSplit.length - 1];
             const searhArr = arrPath.slice(1, arrPath.length - 1);
             searhArr.unshift(startName)
             currentPath = path.join(currentDir, ...currentPath);
-            console.log(currentPath, searhArr)
             fsPromise.readdir(currentPath, 'utf-8').then((res) => {
               for (let i = searhArr.length; i >= 0; i--) {
-                // add emit
                 const searchName = searhArr.slice(0, i).join(' ');
-                console.log(searchName, startName, searhArr[0], 'x')
                 if (res.includes(searchName)) {
                   const oldName = searchName;
                   const currentName = searhArr.slice(i).join(' ') + ' ' + last;
@@ -162,7 +151,6 @@ const fileManager = async (name) => {
                       status = true;
                       console.log(greenColor, 'File renamed', whiteColor);
                       showPathDir(currentDir);
-                      console.log(oldName, currentName, currentPath)
                     }).catch((err) => {
                       console.log(err);
                       showPathDir(currentDir);
@@ -208,7 +196,7 @@ const fileManager = async (name) => {
         compressDecFile(currentData, currentDir, 'decompress');
         break;
       case currentData.slice(0, 2) === 'os':
-        lookOs(currentData);
+        lookOs(currentData, currentDir);
         break;
       case currentData.slice(0, 4) === 'hash':
         hash(currentData, currentDir);
