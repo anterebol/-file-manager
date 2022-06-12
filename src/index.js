@@ -80,49 +80,116 @@ const fileManager = async (name) => {
         add(currentData, currentDir);
         break;
       case currentData.slice(0, 2) === 'rn':
+        const arrPath = currentData.slice(2).trim().split(' ');
+        currentPath = arrPath[0];
         if (currentData.includes(os.homedir())) {
-          const arrPath = currentData.slice(2).trim().split(' ');
-          const last = arrPath[arrPath.length - 1];
-          currentPath = arrPath[0];
-          let status;
-          const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
-          currentPath = arrSplit.filter((item, index) => index !== arrSplit.length - 1);
-          const startName = arrSplit[arrSplit.length - 1];
-          const searhArr = arrPath.slice(1, arrPath.length - 1);
-          currentPath = path.join(...currentPath);
-          fsPromise.readdir(currentPath, 'utf-8').then((res) => {
-            for (let i = searhArr.length - 1; i > 0; i--) {
-              // add emit
-              const searchName = startName + ' ' + searhArr.slice(0, i).join(' ');
-              if (res.includes(searchName)) {
-                const oldName = searchName;
-                const currentName = searhArr.slice(i).join(' ') + ' ' + last;
-                if (!res.includes(currentName)) {
-                  fsPromise.rename(path.join(currentPath, oldName), path.join(currentPath, currentName)).then(() => {
-                    status = true;
-                    console.log(greenColor, 'File renamed', whiteColor);
+          if (arrPath.length > 2) {
+            const last = arrPath[arrPath.length - 1];
+            let status;
+            const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
+            console.log(arrSplit, arrPath)
+            currentPath = arrSplit.filter((item, index) => index !== arrSplit.length - 1);
+            console.log(currentPath)
+            const startName = arrSplit[arrSplit.length - 1];
+            const searhArr = arrPath.slice(1, arrPath.length - 1);
+            searhArr.unshift(startName)
+            currentPath = path.join(...currentPath);
+            console.log(currentPath, searhArr)
+            fsPromise.readdir(currentPath, 'utf-8').then((res) => {
+              for (let i = searhArr.length; i >= 0; i--) {
+                // add emit
+                const searchName = searhArr.slice(0, i).join(' ');
+                console.log(searchName, startName, searhArr[0], 'x')
+                if (res.includes(searchName)) {
+                  const oldName = searchName;
+                  const currentName = searhArr.slice(i).join(' ') + ' ' + last;
+                  if (!res.includes(currentName)) {
+                    fsPromise.rename(path.join(currentPath, oldName), path.join(currentPath, currentName)).then(() => {
+                      status = true;
+                      console.log(greenColor, 'File renamed', whiteColor);
+                      showPathDir(currentDir);
+                      console.log(oldName, currentName, currentPath)
+                    }).catch((err) => {
+                      console.log(err);
+                      showPathDir(currentDir);
+                    });
+                  } else {
+                    console.log(redColor, 'File with the same name already exists', whiteColor);
                     showPathDir(currentDir);
-                    console.log(oldName, currentName, currentPath)
-                  }).catch((err) => {
-                    console.log(err);
-                    showPathDir(currentDir);
-                  });
-                } else {
-                  console.log(redColor, 'File with the same name already exists', whiteColor);
-                  showPathDir(currentDir);
+                  }
+                  break;
                 }
-                break;
               }
-            }
-          }).catch((err) => {
-            console.log(err);
-            showPathDir(currentDir);
-          })
+            }).catch((err) => {
+              console.log(err);
+              showPathDir(currentDir);
+            })
+          } else if (arrPath.length === 2) {
+            const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
+            console.log(arrSplit, arrPath, path.join(...arrSplit.slice(0, arrSplit.length - 1), arrPath[1]))
+            fsPromise.rename(arrPath[0], path.join(...arrSplit.slice(0, arrSplit.length - 1), arrPath[1])).then(() => {
+              // status = true;
+              console.log(greenColor, 'File renamed', whiteColor);
+              showPathDir(currentDir);
+            }).catch((err) => {
+              console.log(err);
+              showPathDir(currentDir);
+            });
+          }
         } else {
-          const arrPath = currentData.slice(2).trim().split(' ').slice(2);
-          const last = arrPath[arrPath.length - 1];
-          currentPath = arrPath[0];
-          let status;
+          if (arrPath.length > 2) {
+            const last = arrPath[arrPath.length - 1];
+            let status;
+            const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
+            console.log(arrSplit, arrPath)
+            currentPath = arrSplit.filter((item, index) => index !== arrSplit.length - 1);
+            console.log(currentPath)
+            const startName = arrSplit[arrSplit.length - 1];
+            const searhArr = arrPath.slice(1, arrPath.length - 1);
+            searhArr.unshift(startName)
+            currentPath = path.join(currentDir, ...currentPath);
+            console.log(currentPath, searhArr)
+            fsPromise.readdir(currentPath, 'utf-8').then((res) => {
+              for (let i = searhArr.length; i >= 0; i--) {
+                // add emit
+                const searchName = searhArr.slice(0, i).join(' ');
+                console.log(searchName, startName, searhArr[0], 'x')
+                if (res.includes(searchName)) {
+                  const oldName = searchName;
+                  const currentName = searhArr.slice(i).join(' ') + ' ' + last;
+                  if (!res.includes(currentName)) {
+                    fsPromise.rename(path.join(currentPath, oldName), path.join(currentPath, currentName)).then(() => {
+                      status = true;
+                      console.log(greenColor, 'File renamed', whiteColor);
+                      showPathDir(currentDir);
+                      console.log(oldName, currentName, currentPath)
+                    }).catch((err) => {
+                      console.log(err);
+                      showPathDir(currentDir);
+                    });
+                  } else {
+                    console.log(redColor, 'File with the same name already exists', whiteColor);
+                    showPathDir(currentDir);
+                  }
+                  break;
+                }
+              }
+            }).catch((err) => {
+              console.log(err);
+              showPathDir(currentDir);
+            })
+          } else if (arrPath.length === 2) {
+            const arrSplit = currentPath.split(new RegExp(/\/|\\/, 'g'));
+            console.log(arrSplit, arrPath, path.join(...arrSplit.slice(0, arrSplit.length - 1), arrPath[1]))
+            fsPromise.rename(path.join(currentDir, arrPath[0]), path.join(currentDir, ...arrSplit.slice(0, arrSplit.length - 1), arrPath[1])).then(() => {
+              // status = true;
+              console.log(greenColor, 'File renamed', whiteColor);
+              showPathDir(currentDir);
+            }).catch((err) => {
+              console.log(err);
+              showPathDir(currentDir);
+            });
+          }
         }
         break;
       case currentData.slice(0, 2) === 'cp':
